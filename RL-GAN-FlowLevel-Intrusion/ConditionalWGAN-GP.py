@@ -19,6 +19,15 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, precision_score
 from sklearn.model_selection import StratifiedShuffleSplit
 
+NUM_WORKS = 4
+LR = 0.0002
+Device = 'cuda' if torch.cuda.is_available() else 'cpu'
+EPOCHS = 256
+CLASS_SIZE = 5 
+EMBEDDING_DIM = 
+
+
+
 def setup_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -80,8 +89,8 @@ class Trainer():
         self.device = device
         self.class_size = class_size
         self.num = num
-        self.lrmodel = Network(10, 40, 5).cuda()
-        state = torch.load("model_pca10.pth")
+        self.lrmodel = Network(train.shape[1], 40, self.class_size).cuda()
+        state = torch.load("model_pretrain_for_GAN_evaluation.pth")
         self.lrmodel.load_state_dict(state)
         #define models
         self.latent_size = latent_size
@@ -245,7 +254,6 @@ class Trainer():
             la += 1
             base = base + i
         label_for_test = torch.LongTensor(label_for_test).cuda()
-
         for epoch in range(250):
             gen_loss = 0
             dis_loss = 0
