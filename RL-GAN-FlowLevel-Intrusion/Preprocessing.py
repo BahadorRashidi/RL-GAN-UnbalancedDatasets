@@ -84,7 +84,7 @@ class Preprocessing:
         return self.maxmin.fit_transform(self.data), self.label
 
 if __name__ == '__main__':
-
     Pre = Preprocessing('KDDTrain+.txt')
     train_data, train_label = Pre.deal_with_lines()
-    print(np.max(train_data), train_label.shape)
+    print(train_data.shape, train_label.shape)
+    #(125973, 122) (125973,)
