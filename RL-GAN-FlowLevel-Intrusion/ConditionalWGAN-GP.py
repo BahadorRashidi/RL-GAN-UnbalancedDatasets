@@ -27,6 +27,7 @@ def setup_seed(seed):
     # random.seed(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
+
 class MyDataset(Dataset):
     def __init__(self, data, label, maxmin):
         self.maxmin = maxmin
@@ -48,6 +49,7 @@ class MyDataset(Dataset):
         # label = torch.LongTensor(self.label[idx])
 
         return self.data[idx], self.label[idx]
+
 class Network(nn.Module):
     def __init__(self, input_dim, hidden, out_dim):
         super().__init__()
@@ -65,26 +67,8 @@ class Network(nn.Module):
         out = self.linear(x)
         return out
 
-
-
 class Trainer():
-
     def __init__(self, vt, train, label, num, class_size, embedding_dim, batch_size, latent_size=2, device='cuda', lr=0.0001, num_workers=1, val_set=None, val_label=None):
-        # #load dataset
-        # transformation = transforms.Compose([
-        #     transforms.ToTensor(),
-        #     transforms.Normalize(mean=0.5, std=0.5)
-        # ])
-
-        #check if data directory exists, if not, create it.
-        # if not os.path.exists(data_directory):
-        #     os.makedirs(data_directory)
-        #     print('Directory created.')
-        # else:
-        #     print('Directory exists.')
-
-        #get dataset from directory. If not present, download to directory
-        # self.dataset = torchvision.datasets.FashionMNIST(data_directory, train=True, transform=transformation, download=True)
         self.dataset = MyDataset(train, label, MinMaxScaler())
         self.val_set = MinMaxScaler().fit_transform(val_set)
         # print(self.val_set)
@@ -114,11 +98,6 @@ class Trainer():
             # print(self.gen.state_dict())
             # input()
             self.optimizer_g = optim.RMSprop(filter(lambda p: p.requires_grad, self.gen.parameters()), lr=lr)
-
-
-
-
-
 
 
     def load_model(self, model, path):
@@ -166,29 +145,11 @@ class Trainer():
         base = 0
         la = 0
         m = 0
-        # tensor([[0.5763, -0.5670],
-        #         [-0.3106, -0.0245],
-        #         [0.6291, -0.2760],
-        #         ...,
-        #         [1.2108, -0.9755],
-        #         [-1.7505, 0.9687],
-        #         [0.6736, -0.4794]], device='cuda:0')
-
         acc = []
         loss_ = []
         # print(self.val_set)
         # print('--------------')
         val_set = torch.FloatTensor(self.val_set).cuda()
-        # print(val_set)
-        # print(self.val_label)
-        # input()
-        # print(self.val_label[:,0])
-        # sorted_id = sorted(range(len(self.val_label[:,0])), key=lambda k: self.val_label[:,0][k], reverse=False)
-        # self.val_label = self.val_label[sorted_id]
-        # val_set = val_set[sorted_id]
-        # print(sorted_id)
-        #
-        # input()
         for i in self.num:
             fixed_labels[base: base + i, la] = 1
             label_for_test[base:base + i] = la
@@ -506,20 +467,20 @@ def spilt(ratio, X_train, y_train):
 from Preprocessing import Preprocessing
 def main():
     setup_seed(0)
-    parser = argparse.ArgumentParser(description='Hyperparameters for training GAN')
-    #hyperparameter loading
-    parser.add_argument('--data_directory', type=str, default='data', help='directory to MNIST dataset files')
-    parser.add_argument('--saved_image_directory', type=str, default='data/saved_images', help='directory to where image samples will be saved')
-    parser.add_argument('--saved_model_directory', type=str, default='saved_models', help='directory to where model weights will be saved')
-    parser.add_argument('--class_size', type=int, default=4, help='number of unique classes in dataset')
-    parser.add_argument('--embedding_dim', type=int, default=4, help='size of embedding vector')
-    parser.add_argument('--batch_size', type=int, default=256, help='size of batches passed through networks at each step')
-    parser.add_argument('--latent_size', type=int, default=100, help='size of gaussian noise vector')
-    parser.add_argument('--device', type=str, default='cuda', help='cpu or gpu depending on availability and compatability')
-    parser.add_argument('--lr', type=float, default=0.0002, help='learning rate of models')
-    parser.add_argument('--num_workers', type=int, default=4, help='workers simultaneously putting data into RAM')
-    parser.add_argument('--epochs', type=int, default=50, help='number of iterations of dataset through network for training')
-    args = parser.parse_args()
+#     parser = argparse.ArgumentParser(description='Hyperparameters for training GAN')
+#     #hyperparameter loading
+#     parser.add_argument('--data_directory', type=str, default='data', help='directory to MNIST dataset files')
+#     parser.add_argument('--saved_image_directory', type=str, default='data/saved_images', help='directory to where image samples will be saved')
+#     parser.add_argument('--saved_model_directory', type=str, default='saved_models', help='directory to where model weights will be saved')
+#     parser.add_argument('--class_size', type=int, default=4, help='number of unique classes in dataset')
+#     parser.add_argument('--embedding_dim', type=int, default=4, help='size of embedding vector')
+#     parser.add_argument('--batch_size', type=int, default=256, help='size of batches passed through networks at each step')
+#     parser.add_argument('--latent_size', type=int, default=100, help='size of gaussian noise vector')
+#     parser.add_argument('--device', type=str, default='cuda', help='cpu or gpu depending on availability and compatability')
+#     parser.add_argument('--lr', type=float, default=0.0002, help='learning rate of models')
+#     parser.add_argument('--num_workers', type=int, default=4, help='workers simultaneously putting data into RAM')
+#     parser.add_argument('--epochs', type=int, default=50, help='number of iterations of dataset through network for training')
+#     args = parser.parse_args()
 
     Pre = Preprocessing('KDDTrain+.txt')
     train_data, train_label = Pre.deal_with_lines()
