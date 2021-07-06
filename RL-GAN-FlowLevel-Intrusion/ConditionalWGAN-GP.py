@@ -18,13 +18,14 @@ from sklearn.preprocessing import MinMaxScaler
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, precision_score
 from sklearn.model_selection import StratifiedShuffleSplit
+import arguments as args
+
 
 NUM_WORKS = 4
 LR = 0.0002
 Device = 'cuda' if torch.cuda.is_available() else 'cpu'
 EPOCHS = 256
-CLASS_SIZE = 5 
-EMBEDDING_DIM = 
+CLASS_SIZE = 5
 
 
 
@@ -34,6 +35,7 @@ def setup_seed(seed):
     np.random.seed(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
+
 
 class MyDataset(Dataset):
     def __init__(self, data, label, maxmin):
@@ -491,20 +493,20 @@ def main():
     Pre = Preprocessing('KDDTrain+.txt')
     train_data, train_label = Pre.deal_with_lines()
     X_train, y_train, X_val, y_val = spilt(0.8, train_data, train_label)
-    print(X_train.shape, y_train.shape, X_val.shape, y_val.shape)
+    #print(X_train.shape, y_train.shape, X_val.shape, y_val.shape)#
 
-    print(np.max(train_data), X_train.shape)
+    #print(np.max(train_data), X_train.shape)
     # input()
     # input()
-    PCA_DIMENSION = 10
-    train_set, train_label, num, val_set, val_label = getdataset("/home/binyang/PycharmProjects/AE/train_embedding.csv","/home/binyang/PycharmProjects/AE/train_label.csv", PCA_DIMENSION)
-
+    #PCA_DIMENSION = 10
+    #train_set, train_label, num, val_set, val_label = getdataset("/home/binyang/PycharmProjects/AE/train_embedding.csv","/home/binyang/PycharmProjects/AE/train_label.csv", PCA_DIMENSION)
+    
+    
     data_dir = args.data_directory
     saved_image_dir = args.saved_image_directory
     saved_model_dir = args.saved_model_directory
-    class_size = args.class_size
-    embedding_dim = args.embedding_dim
-    batch_size = args.batch_size
+    class_size = CLASS_SIZE
+    batch_size = BATCH_SIZE
     latent_size = args.latent_size
     device = args.device
     lr = args.lr
