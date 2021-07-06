@@ -2,7 +2,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import torch
-
+import arguments as args
+#args.label_dim args.data_dim args.noise_dim#
 '''Discriminator'''
 def weights_init(m):
 
@@ -30,14 +31,14 @@ def weights_init(m):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, class_size, embedding_dim):
+    def __init__(self, class_size):
         super(Discriminator, self).__init__()
 
-        self.embedding = nn.Embedding(class_size, embedding_dim)
+        self.embedding = nn.Embedding(class_size, args.label_dim)
 
 
         self.seq = nn.Sequential(
-            nn.Linear(10 + embedding_dim, 40, bias=True),
+            nn.Linear(args.data_dim + args.label_dim, 40, bias=True),
             # nn.BatchNorm1d(40),
             nn.LeakyReLU(0.2, inplace=True),
 
@@ -74,7 +75,7 @@ class Discriminator(nn.Module):
 
 '''Generator'''
 class Generator(nn.Module):
-    def __init__(self, vt, latent_size, class_size, embedding_dim):
+    def __init__(self, vt, latent_size, class_size):
         super(Generator, self).__init__()
 
         # for p in self.parameters():
@@ -82,19 +83,19 @@ class Generator(nn.Module):
             # print(p)
         # input()
         self.vt = vt
-        self.embedding = nn.Embedding(class_size, embedding_dim)
+        self.embedding = nn.Embedding(class_size, args.label_dim)
         self.seq = nn.Sequential(
-            nn.Linear(latent_size + embedding_dim, 40, bias=True),
+            nn.Linear(args.noise_dim + args.label_dim, 500, bias=True),
             # nn.BatchNorm1d(40),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(40, 10),
+            nn.Linear(500, args.data_dim),
             nn.Tanh())
         if not self.vt:
             for p in self.parameters():
                 # print(p)
                 p.requires_grad = False
                 # print(p)
-            self.noise = nn.Sequential(nn.Linear(latent_size, latent_size, bias=True))
+            self.noise = nn.Sequential(nn.Linear(args.noise_dim, args.noise_dim, bias=True))
             self.apply(weights_init)
         # input()
 
