@@ -26,10 +26,6 @@ def weights_init(m):
     #     m.weight.data.normal_(1.0, 0.02)
 
 
-
-
-
-
 class Discriminator(nn.Module):
     def __init__(self, class_size):
         super(Discriminator, self).__init__()
@@ -75,7 +71,7 @@ class Discriminator(nn.Module):
 
 '''Generator'''
 class Generator(nn.Module):
-    def __init__(self, vt, latent_size, class_size):
+    def __init__(self, vt, class_size):
         super(Generator, self).__init__()
 
         # for p in self.parameters():
