@@ -77,7 +77,7 @@ class Network(nn.Module):
         return out
 
 class Trainer():
-    def __init__(self, vt, train, label, num, class_size, embedding_dim, batch_size, latent_size=2, device='cuda', lr=0.0001, num_workers=1, val_set=None, val_label=None):
+    def __init__(self, vt, train, label, num, class_size, batch_size, device='cuda', lr=0.0001, num_workers=1, val_set=None, val_label=None):
         self.dataset = MyDataset(train, label, MinMaxScaler())
         self.val_set = MinMaxScaler().fit_transform(val_set)
         # print(self.val_set)
@@ -95,10 +95,9 @@ class Trainer():
         state = torch.load("model_pretrain_for_GAN_evaluation.pth")
         self.lrmodel.load_state_dict(state)
         #define models
-        self.latent_size = latent_size
-        self.gen = Generator(vt, self.latent_size, class_size, embedding_dim).to(device)
+        self.gen = Generator(vt, self.class_size).to(device)
         if vt:
-            self.dis = Discriminator(class_size, embedding_dim).to(device)
+            self.dis = Discriminator(self.class_size).to(device)
             self.optimizer_g = optim.RMSprop(self.gen.parameters(), lr=lr)
             self.loss_func = nn.BCELoss().to(device)
             self.optimizer_d = optim.RMSprop(self.dis.parameters(), lr=lr)
@@ -189,7 +188,7 @@ class Trainer():
             # input()
             # print(self.val_set.max())
             base = 0
-            for i in range(0, 4):
+            for i in range(0, self.class_size):
                 ind = np.where(self.val_label == i)
                 dis = abs(val_set[ind[0]] - val_out[base:base + len(ind[0])]) ** 2
 
@@ -501,18 +500,17 @@ def main():
     #PCA_DIMENSION = 10
     #train_set, train_label, num, val_set, val_label = getdataset("/home/binyang/PycharmProjects/AE/train_embedding.csv","/home/binyang/PycharmProjects/AE/train_label.csv", PCA_DIMENSION)
     
-    
-    data_dir = args.data_directory
-    saved_image_dir = args.saved_image_directory
-    saved_model_dir = args.saved_model_directory
     class_size = CLASS_SIZE
     batch_size = BATCH_SIZE
-    latent_size = args.latent_size
-    device = args.device
-    lr = args.lr
-    num_workers = args.num_workers
-    epochs = args.epochs
-    gan = Trainer(False, train_set, train_label, num, class_size, embedding_dim, batch_size, 2, device, lr, num_workers, val_set, val_label)
+    device = DEVICE
+    lr = LR
+    num_workers = NUM_WORKERS
+    epochs = EPOCHS
+    num = []
+    for i in range(class_size):
+        num.append(len(y_val[y_val == i]))
+    
+    gan = Trainer(False, X_train, y_train, num, class_size, batch_size, device, lr, num_workers, X_val, y_val)
     # gen_loss_lost, dis_loss_list = gan.train(epochs, saved_image_dir, saved_model_dir)
     gan.train_noise(epochs)
 
