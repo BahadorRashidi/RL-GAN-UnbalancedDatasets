@@ -21,7 +21,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 import arguments as args
 
 
-NUM_WORKS = 4
+NUM_WORKERS = 4
 LR = 0.0002
 Device = 'cuda' if torch.cuda.is_available() else 'cpu'
 EPOCHS = 256
