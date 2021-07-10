@@ -3,3 +3,8 @@
 *.mat
 *.log
 *.ipynb*
+*.O
+*/node_modules
+/packages
+*.pyc
+*.class
